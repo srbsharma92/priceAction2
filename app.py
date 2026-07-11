@@ -81,17 +81,16 @@ components.html(
         Next refresh in: <span id="countdown" style="font-weight: bold; color: #4B8BBE;">05:00</span>
     </div>
     <script>
-        let totalSeconds = 300;  // 5 minutes
+        const REFRESH_SECONDS = 300;  // 5 minutes
         const countdownEl = document.getElementById("countdown");
 
         function updateCountdown() {
-            const minutes = Math.floor(totalSeconds / 60);
-            const seconds = totalSeconds % 60;
+            const elapsed = Math.floor(Date.now() / 1000) % REFRESH_SECONDS;
+            const remaining = REFRESH_SECONDS - elapsed;
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
             countdownEl.textContent =
                 String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
-            if (totalSeconds > 0) {
-                totalSeconds -= 1;
-            }
         }
 
         updateCountdown();

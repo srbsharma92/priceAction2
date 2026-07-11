@@ -9,6 +9,7 @@ import os
 import streamlit as st
 import pandas as pd
 from streamlit_autorefresh import st_autorefresh
+import streamlit.components.v1 as components
 
 EXCEL_PATH = "data/live_data.xlsx"
 
@@ -72,14 +73,33 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-col1, col2 = st.columns([1, 1])
-with col1:
-    refresh = st.button("Refresh")
-with col2:
-    fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
+fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
 
-if refresh:
-    st.rerun()
+components.html(
+    """
+    <div style="text-align: center; font-size: 16px; color: gray; padding: 8px 0;">
+        Next refresh in: <span id="countdown" style="font-weight: bold; color: #4B8BBE;">05:00</span>
+    </div>
+    <script>
+        let totalSeconds = 300;  // 5 minutes
+        const countdownEl = document.getElementById("countdown");
+
+        function updateCountdown() {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            countdownEl.textContent =
+                String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
+            if (totalSeconds > 0) {
+                totalSeconds -= 1;
+            }
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+    """,
+    height=50,
+)
 
 # ---------------- Load, filter & display data ----------------
 df_output_5mP, df_output_5mVol, df_output_open, last_updated = load_data()

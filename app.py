@@ -10,6 +10,7 @@ import streamlit as st
 import pandas as pd
 from streamlit_autorefresh import st_autorefresh
 import streamlit.components.v1 as components
+from screener_job import main
 
 EXCEL_PATH = "data/live_data.xlsx"
 
@@ -19,7 +20,7 @@ st.set_page_config(page_title="Live Price Action in NSE", layout="wide")
 
 # Auto-refresh the page every 5 minutes to pick up new data
 st_autorefresh(interval=5 * 60 * 1000, key="datarefresh")
-
+main()
 
 def load_data():
     if not os.path.exists(EXCEL_PATH):

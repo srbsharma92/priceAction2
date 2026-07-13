@@ -78,7 +78,7 @@ fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
 components.html(
     """
     <div style="text-align: center; font-size: 16px; color: gray; padding: 8px 0;">
-        Next refresh in: 5mins <span id="countdown" style="font-weight: bold; color: #4B8BBE;">05:00</span>
+        Next refresh in: 5mins
     </div>
     """,
     height=50,

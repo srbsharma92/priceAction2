@@ -168,24 +168,25 @@ def screener():
    #5m charting
     df_5m_Price= df[ (df['change|5'].abs() > 0.7) & ( (df['volume|5']*df['close']) > 1000000)].sort_values(by='change|5', ascending=False)
     df_5m_Price['Momentum']=  np.where(df_5m_Price['change|5'] > 0, 'Bullish','Bearish')
-    df_5m_Price=df_5m_Price[['name','change|5','Momentum']]
-    df_5m_Price.columns=['Stock Name','Price Change% in 5mins','Momentum']
+    df_5m_Price=df_5m_Price[['name','close','change|5','Momentum']]
+    df_5m_Price.columns=['Symbol','LTP','% Change','Momentum']
     
     df_5m_Vol= df[ (df['volume_change|5'] > 200 ) & ( (df['volume|5']*df['close']) > 1000000) ].sort_values(by='volume_change|5', ascending=False)
     df_5m_Vol['Momentum']=  np.where(df_5m_Vol['change|5'] > 0, 'Bullish','Bearish')
     df_5m_Vol['Traded Value']=df_5m_Vol['close']* df_5m_Vol['volume']
-    df_5m_Vol=df_5m_Vol[['name','change|5','volume_change|5','Momentum','Traded Value']]
+    df_5m_Vol=df_5m_Vol[['name','Traded Value','volume_change|5','Momentum','Traded Value']]
+    df_5m_Price.columns=['Symbol','LTP','% Change','Momentum']
     
     #Presentation
     df_5m_Vol['Traded Value'] = (df_5m_Vol['Traded Value'] / 10000000).round(2).astype(str) + 'Cr'
-    df_5m_Vol.columns=['Stock Name','Price Change% in 5mins','Volume Change% in 5mins','Momentum','Days Traded Value']
+    #df_5m_Vol.columns=['Stock Name','Price Change% in 5mins','Volume Change% in 5mins','Momentum','Days Traded Value']
     
     #opening
     df_opening= df[df['gap'].abs() > 2 ].sort_values(by='gap', ascending=False)
     df_opening['gap']=df_opening['gap'].round(1)
     df_opening['Momentum']=  np.where(df_opening['gap'] > 0, 'Bullish','Bearish')
-    df_opening=df_opening[['name','gap','Momentum']]
-    df_opening.columns=['Stock Name','Opening Gap','Momentum']
+    df_opening=df_opening[['name','close','gap','Momentum']]
+    df_opening.columns=["Symbol", "LTP", "% Change", "Momentum"]
 
     #df_5m_Price = pd.DataFrame(columns=["Symbol", "LTP", "% Change", "Momentum"])
 

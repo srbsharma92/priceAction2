@@ -20,7 +20,6 @@ st.set_page_config(page_title="Live Price Action in NSE", layout="wide")
 
 # Auto-refresh the page every 5 minutes to pick up new data
 st_autorefresh(interval=5 * 60 * 1000, key="datarefresh")
-main()
 
 def load_data():
     if not os.path.exists(EXCEL_PATH):
@@ -79,24 +78,8 @@ fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
 components.html(
     """
     <div style="text-align: center; font-size: 16px; color: gray; padding: 8px 0;">
-        Next refresh in: <span id="countdown" style="font-weight: bold; color: #4B8BBE;">05:00</span>
+        Next refresh in: 5mins <span id="countdown" style="font-weight: bold; color: #4B8BBE;">05:00</span>
     </div>
-    <script>
-        const REFRESH_SECONDS = 300;  // 5 minutes
-        const countdownEl = document.getElementById("countdown");
-
-        function updateCountdown() {
-            const elapsed = Math.floor(Date.now() / 1000) % REFRESH_SECONDS;
-            const remaining = REFRESH_SECONDS - elapsed;
-            const minutes = Math.floor(remaining / 60);
-            const seconds = remaining % 60;
-            countdownEl.textContent =
-                String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
-        }
-
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-    </script>
     """,
     height=50,
 )

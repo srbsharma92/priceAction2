@@ -75,15 +75,6 @@ st.markdown(
 
 fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
 
-components.html(
-    """
-    <div style="text-align: center; font-size: 16px; color: gray; padding: 8px 0;">
-        Next refresh in: 5mins
-    </div>
-    """,
-    height=50,
-)
-
 # ---------------- Load, filter & display data ----------------
 df_output_5mP, df_output_5mVol, df_output_open, last_updated = load_data()
 
@@ -92,7 +83,7 @@ df_output_5mVol = apply_fo_filter(df_output_5mVol, fo_checkbox)
 df_output_open = apply_fo_filter(df_output_open, fo_checkbox)
 
 st.markdown(
-    f"<p style='text-align: center; color: gray;'>Data last updated (IST): {last_updated}</p>",
+    f"<p style='text-align: center; color: gray;'>Data last updated (IST): {last_updated} - Next refresh in 5mins</p>",
     unsafe_allow_html=True
 )
 

@@ -32,7 +32,7 @@ def load_data():
     return df_5m_price, df_5m_vol, df_opening, last_updated
 
 
-def apply_fo_filter(df, enabled, name_col='name', sort_col='close_EMA10_1H'):
+def apply_fo_filter(df, enabled, name_col='Symbol', sort_col='% Change'):
     """Filter to F&O stocks only (if enabled) and sort by EMA column if present."""
     if df is None or df.empty:
         return df

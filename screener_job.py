@@ -24,7 +24,7 @@ def is_market_open(now_ist: datetime) -> bool:
     return start <= now_ist.time() <= end
 
 
-def screener():
+def screener(fo_checkbox):
     country="india"
     tickers="any"
     indexes="any"
@@ -162,7 +162,9 @@ def screener():
     
     #for col in df.columns:
     #    df[col] = pd.to_numeric(df[col], errors='coerce')
-        
+    if fo_checkbox :
+        df = df[df['name'].isin(fo_list1)].sort_values(by='close_EMA10_1H', ascending=False)
+    
     
    #5m charting
     df_5m_Price= df[ (df['change|5'].abs() > 0.7) & ( (df['volume|5']*df['close']) > 1000000)].sort_values(by='change|5', ascending=False)

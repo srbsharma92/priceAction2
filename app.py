@@ -22,7 +22,7 @@ st.set_page_config(page_title="Live Price Action in NSE", layout="wide")
 st_autorefresh(interval=5 * 60 * 1000, key="datarefresh")
 
 def load_data():
-    main()
+    
     if not os.path.exists(EXCEL_PATH):
         return None, None, None, "No data yet"
     df_5m_price = pd.read_excel(EXCEL_PATH, sheet_name="5m_Price")

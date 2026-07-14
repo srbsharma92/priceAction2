@@ -20,7 +20,7 @@ st.set_page_config(page_title="Live Price Action in NSE", layout="wide")
 
 # Auto-refresh the page every 5 minutes to pick up new data
 st_autorefresh(interval=5 * 60 * 1000, key="datarefresh")
-
+main()
 def load_data():
     if not os.path.exists(EXCEL_PATH):
         return None, None, None, "No data yet"

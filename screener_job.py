@@ -20,7 +20,7 @@ IST = pytz.timezone('Asia/Kolkata')
 def is_market_open(now_ist: datetime) -> bool:
     """NSE cash market: Mon-Fri, 09:00-15:30 IST (widened for pre-open data)."""
     start = dtime(9, 0)
-    end = dtime(15, 30)
+    end = dtime(16, 30)
     return start <= now_ist.time() <= end
 
 

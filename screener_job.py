@@ -153,45 +153,44 @@ def screener():
     df['close_EMA20_1H'] = ((100 * (df['close|60'] - df['EMA20|60']) / df['EMA20|60'])).round(2)
     df['close_DEMA10'] = ((100 * (df['close|60'] - df['EMA10']) / df['EMA10'])).round(2)
     df['opening'] = ((100 * (df['close'] - df['close|60']) / df['close|60'])).round(2)
-    
-    # Filter for the F&O Stocks only
-    
-    # Read the Excel file into a pandas DataFrame
-    #fo_list = pd.read_excel('FnO list.xlsx',sheet_name='nse FnO')
-    fo_list1=['AARTIIND','ABB','ADANIENT','ADANIPORTS','ABCAPITAL','ABFRL','ALKEM','AMBUJACEM','APOLLOHOSP','ASHOKLEY','ASIANPAINT','ASTRAL','AUBANK','AUROPHARMA','AXISBANK','BAJAJ-AUTO','BAJFINANCE','BAJAJFINSV','BALKRISIND','BANDHANBNK','BANKBARODA','BEL','BHARATFORG','BHEL','BPCL','BHARTIARTL','BIOCON','BSOFT','BOSCHLTD','BRITANNIA','CANBK','CHAMBLFERT','CHOLAFIN','CIPLA','COALINDIA','COFORGE','COLPAL','CONCOR','CROMPTON','CUMMINSIND','DABUR','DALBHARAT','DIVISLAB','DIXON','DLF','DRREDDY','EICHERMOT','EXIDEIND','GAIL','GLENMARK','GODREJCP','GODREJPROP','GRANULES','GRASIM','HAVELLS','HCLTECH','HDFCAMC','HDFCBANK','HDFCLIFE','HEROMOTOCO','HINDALCO','HAL','HINDCOPPER','HINDPETRO','HINDUNILVR','ICICIBANK','ICICIGI','ICICIPRULI','IDFCFIRSTB','IEX','IOC','IRCTC','IGL','INDUSTOWER','INDUSINDBK','NAUKRI','INFY','INDIGO','ITC','JINDALSTEL','JSWSTEEL','JUBLFOOD','KOTAKBANK','LTF','LT','LAURUSLABS','LICHSGFIN','LTIM','LUPIN','MGL','M&MFIN','M&M','MANAPPURAM','MARICO','MARUTI','MFSL','MPHASIS','MCX','MUTHOOTFIN','NATIONALUM','NESTLEIND','NMDC','NTPC','OBEROIRLTY','ONGC','OFSS','PAGEIND','PERSISTENT','PETRONET','PIIND','PIDILITIND','PEL','POLYCAB','PFC','POWERGRID','PNB','RBLBANK','RECLTD','RELIANCE','MOTHERSON','SBICARD','SBILIFE','SHREECEM','SHRIRAMFIN','SIEMENS','SRF','SBIN','SAIL','SUNPHARMA','SYNGENE','TATACHEM','TATACOMM','TCS','TATACONSUM','TATAMOTORS','TATAPOWER','TATASTEEL','TECHM','FEDERALBNK','INDHOTEL','TITAN','TORNTPHARM','TRENT','TVSMOTOR','ULTRACEMCO','UNITDSPR','UPL','VEDL','IDEA','VOLTAS','WIPRO','ZYDUSLIFE','360ONE','ADANIENSOL','ADANIGREEN','AMBER','ANGELONE','APLAPOLLO','ATGL','BANKINDIA','BANKNIFTY','BDL','BLUESTARCO','BSE','CAMS','CDSL','CESC','CGPOWER','CYIENT','DELHIVERY','DMART','ETERNAL','FINNIFTY','FORTIS','GMRAIRPORT','HFCL','HINDZINC','HUDCO','IIFL','INDIANB','INOXWIND','IRB','IREDA','IRFC','JIOFIN','JSL','JSWENERGY','KALYANKJIL','KAYNES','KEI','KFINTECH','KPITTECH','LICI','LODHA','MANKIND','MAXHEALTH','MAZDOCK','MIDCPNIFTY','NBCC','NCC','NHPC','NIFTY','NYKAA','OIL','PATANJALI','PAYTM','PGEL','PHOENIXLTD','PNBHOUSING','POLICYBZR','POONAWALLA','PPLPHARMA','PRESTIGE','RVNL','SJVN','SOLARINDS','SONACOMS','SUPREMEIND','TATAELXSI','TATATECH','TIINDIA','TITAGARH','TORNTPOWER','UNIONBANK','UNOMINDA','VBL','YESBANK']
-    
-    #for col in df.columns:
-    #    df[col] = pd.to_numeric(df[col], errors='coerce')
-    #if fo_checkbox :
-    #    df = df[df['name'].isin(fo_list1)].sort_values(by='close_EMA10_1H', ascending=False)
-    
-    
-   #5m charting
+    #5m charting==============================
     df_5m_Price= df[ (df['change|5'].abs() > 0.7) & ( (df['volume|5']*df['close']) > 1000000)].sort_values(by='change|5', ascending=False)
     df_5m_Price['Momentum']=  np.where(df_5m_Price['change|5'] > 0, 'Bullish','Bearish')
-    df_5m_Price=df_5m_Price[['name','close','change|5','Momentum']]
-    df_5m_Price.columns=['Symbol','LTP','% Change','Momentum']
+    df_5m_Price=df_5m_Price[['name','change|5','Momentum']]
+    df_5m_Price.columns=['Stock Name','Price Change% in 5mins','Momentum']
     
     df_5m_Vol= df[ (df['volume_change|5'] > 200 ) & ( (df['volume|5']*df['close']) > 1000000) ].sort_values(by='volume_change|5', ascending=False)
     df_5m_Vol['Momentum']=  np.where(df_5m_Vol['change|5'] > 0, 'Bullish','Bearish')
     df_5m_Vol['Traded Value']=df_5m_Vol['close']* df_5m_Vol['volume']
-    df_5m_Vol=df_5m_Vol[['name','volume|5','volume_change|5','Momentum','Traded Value']]
-    df_5m_Vol.columns=['Symbol','Volume','% Change','Momentum','Traded Value']
+    df_5m_Vol=df_5m_Vol[['name','change|5','volume_change|5','Momentum','Traded Value']]
     
     #Presentation
     df_5m_Vol['Traded Value'] = (df_5m_Vol['Traded Value'] / 10000000).round(2).astype(str) + 'Cr'
-    #df_5m_Vol.columns=['Stock Name','Price Change% in 5mins','Volume Change% in 5mins','Momentum','Days Traded Value']
+    df_5m_Vol.columns=['Stock Name','Price Change% in 5mins','Volume Change% in 5mins','Momentum','Days Traded Value']
     
+    #15m charting =====================================================
+    df_15m_Price= df[ (df['change|15'].abs() > 0.7) & ( (df['volume|5']*df['close']) > 1000000)].sort_values(by='change|15', ascending=False)
+    df_15m_Price['Momentum']=  np.where(df_15m_Price['change|15'] > 0, 'Bullish','Bearish')
+    df_15m_Price=df_15m_Price[['name','change|15','Momentum']]
+    df_15m_Price.columns=['Stock Name','Price Change% in 15mins','Momentum']
+     
+    df_15m_Vol= df[ (df['volume_change|15'] > 200 ) & ( (df['volume|5']*df['close']) > 1000000) ].sort_values(by='volume_change|15', ascending=False)
+    df_15m_Vol['Momentum']=  np.where(df_15m_Vol['change|15'] > 0, 'Bullish','Bearish')
+    df_15m_Vol['Traded Value']=df_15m_Vol['close']* df_15m_Vol['volume']
+    df_15m_Vol=df_15m_Vol[['name','change|15','volume_change|15','Momentum','Traded Value']]
+     
+    #Presentation
+    df_15m_Vol['Traded Value'] = (df_15m_Vol['Traded Value'] / 10000000).round(2).astype(str) + 'Cr'
+    df_15m_Vol.columns=['Stock Name','Price Change% in 15mins','Volume Change% in 15mins','Momentum','Days Traded Value']
+
     #opening
     df_opening= df[df['gap'].abs() > 2 ].sort_values(by='gap', ascending=False)
     df_opening['gap']=df_opening['gap'].round(1)
     df_opening['Momentum']=  np.where(df_opening['gap'] > 0, 'Bullish','Bearish')
-    df_opening=df_opening[['name','close','gap','Momentum']]
-    df_opening.columns=["Symbol", "LTP", "% Change", "Momentum"]
-
-    #df_5m_Price = pd.DataFrame(columns=["Symbol", "LTP", "% Change", "Momentum"])
-
-    return df, df_5m_Price, df_5m_Vol, df_opening
+    df_opening=df_opening[['name','gap','Momentum']]
+    df_opening.columns=['Stock Name','Opening Gap','Momentum']
+    
+    return df, df_5m_Price,df_5m_Vol,df_15m_Price,df_15m_Vol,df_opening
 
 
 def main():
@@ -201,7 +200,7 @@ def main():
         print(f"Market closed at {now_ist.strftime('%H:%M:%S %d%b%y')} IST — skipping run.")
         sys.exit(0)
 
-    df, df_5m_price, df_5m_vol, df_opening = screener()
+    df, df_5m_price, df_5m_vol, df_15m_price, df_15m_vol,df_opening = screener()
 
     timestamp = now_ist.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -210,6 +209,10 @@ def main():
             writer, sheet_name="5m_Price", index=False)
         (df_5m_vol if df_5m_vol is not None else pd.DataFrame()).to_excel(
             writer, sheet_name="5m_Vol", index=False)
+        (df_15m_price if df_5m_price is not None else pd.DataFrame()).to_excel(
+            writer, sheet_name="15m_Price", index=False)
+        (df_15m_vol if df_5m_vol is not None else pd.DataFrame()).to_excel(
+            writer, sheet_name="15m_Vol", index=False)
         (df_opening if df_opening is not None else pd.DataFrame()).to_excel(
             writer, sheet_name="Opening", index=False)
         pd.DataFrame({"last_updated_ist": [timestamp]}).to_excel(

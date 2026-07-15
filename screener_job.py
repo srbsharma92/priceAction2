@@ -188,7 +188,7 @@ def screener():
     df_opening['gap']=df_opening['gap'].round(1)
     df_opening['Momentum']=  np.where(df_opening['gap'] > 0, 'Bullish','Bearish')
     df_opening=df_opening[['name','gap','Momentum']]
-    df_opening.columns=['Stock Name','Opening Gap','Momentum']
+    df_opening.columns=['Stock Name','Opening Gap%','Momentum']
     
     return df, df_5m_Price,df_5m_Vol,df_15m_Price,df_15m_Vol,df_opening
 

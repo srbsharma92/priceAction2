@@ -176,7 +176,7 @@ def screener():
     df_5m_Vol['Momentum']=  np.where(df_5m_Vol['change|5'] > 0, 'Bullish','Bearish')
     df_5m_Vol['Traded Value']=df_5m_Vol['close']* df_5m_Vol['volume']
     df_5m_Vol=df_5m_Vol[['name','volume|5','volume_change|5','Momentum','Traded Value']]
-    df_5m_Vol.columns=['Symbol','Volume','% Change','Momentum''Traded Value']
+    df_5m_Vol.columns=['Symbol','Volume','% Change','Momentum','Traded Value']
     
     #Presentation
     df_5m_Vol['Traded Value'] = (df_5m_Vol['Traded Value'] / 10000000).round(2).astype(str) + 'Cr'

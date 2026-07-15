@@ -8,11 +8,14 @@ schedule via GitHub Actions. This app never calls the scraper itself.
 import os
 import streamlit as st
 import pandas as pd
+from datetime import datetime, time as dtime
+import pytz
 from streamlit_autorefresh import st_autorefresh
 import streamlit.components.v1 as components
 from screener_job import main
 
 EXCEL_PATH = "data/live_data.xlsx"
+IST = pytz.timezone("Asia/Kolkata")
 
 FO_LIST = ['AARTIIND','ABB','ADANIENT','ADANIPORTS','ABCAPITAL','ABFRL','ALKEM','AMBUJACEM','APOLLOHOSP','ASHOKLEY','ASIANPAINT','ASTRAL','AUBANK','AUROPHARMA','AXISBANK','BAJAJ-AUTO','BAJFINANCE','BAJAJFINSV','BALKRISIND','BANDHANBNK','BANKBARODA','BEL','BHARATFORG','BHEL','BPCL','BHARTIARTL','BIOCON','BSOFT','BOSCHLTD','BRITANNIA','CANBK','CHAMBLFERT','CHOLAFIN','CIPLA','COALINDIA','COFORGE','COLPAL','CONCOR','CROMPTON','CUMMINSIND','DABUR','DALBHARAT','DIVISLAB','DIXON','DLF','DRREDDY','EICHERMOT','EXIDEIND','GAIL','GLENMARK','GODREJCP','GODREJPROP','GRANULES','GRASIM','HAVELLS','HCLTECH','HDFCAMC','HDFCBANK','HDFCLIFE','HEROMOTOCO','HINDALCO','HAL','HINDCOPPER','HINDPETRO','HINDUNILVR','ICICIBANK','ICICIGI','ICICIPRULI','IDFCFIRSTB','IEX','IOC','IRCTC','IGL','INDUSTOWER','INDUSINDBK','NAUKRI','INFY','INDIGO','ITC','JINDALSTEL','JSWSTEEL','JUBLFOOD','KOTAKBANK','LTF','LT','LAURUSLABS','LICHSGFIN','LTIM','LUPIN','MGL','M&MFIN','M&M','MANAPPURAM','MARICO','MARUTI','MFSL','MPHASIS','MCX','MUTHOOTFIN','NATIONALUM','NESTLEIND','NMDC','NTPC','OBEROIRLTY','ONGC','OFSS','PAGEIND','PERSISTENT','PETRONET','PIIND','PIDILITIND','PEL','POLYCAB','PFC','POWERGRID','PNB','RBLBANK','RECLTD','RELIANCE','MOTHERSON','SBICARD','SBILIFE','SHREECEM','SHRIRAMFIN','SIEMENS','SRF','SBIN','SAIL','SUNPHARMA','SYNGENE','TATACHEM','TATACOMM','TCS','TATACONSUM','TATAMOTORS','TATAPOWER','TATASTEEL','TECHM','FEDERALBNK','INDHOTEL','TITAN','TORNTPHARM','TRENT','TVSMOTOR','ULTRACEMCO','UNITDSPR','UPL','VEDL','IDEA','VOLTAS','WIPRO','ZYDUSLIFE','360ONE','ADANIENSOL','ADANIGREEN','AMBER','ANGELONE','APLAPOLLO','ATGL','BANKINDIA','BANKNIFTY','BDL','BLUESTARCO','BSE','CAMS','CDSL','CESC','CGPOWER','CYIENT','DELHIVERY','DMART','ETERNAL','FINNIFTY','FORTIS','GMRAIRPORT','HFCL','HINDZINC','HUDCO','IIFL','INDIANB','INOXWIND','IRB','IREDA','IRFC','JIOFIN','JSL','JSWENERGY','KALYANKJIL','KAYNES','KEI','KFINTECH','KPITTECH','LICI','LODHA','MANKIND','MAXHEALTH','MAZDOCK','MIDCPNIFTY','NBCC','NCC','NHPC','NIFTY','NYKAA','OIL','PATANJALI','PAYTM','PGEL','PHOENIXLTD','PNBHOUSING','POLICYBZR','POONAWALLA','PPLPHARMA','PRESTIGE','RVNL','SJVN','SOLARINDS','SONACOMS','SUPREMEIND','TATAELXSI','TATATECH','TIINDIA','TITAGARH','TORNTPOWER','UNIONBANK','UNOMINDA','VBL','YESBANK']
 
@@ -25,6 +28,14 @@ st.set_page_config(
 
 # Auto-refresh the page every 5 minutes to pick up new data
 st_autorefresh(interval=5 * 60 * 1000, key="datarefresh")
+
+def is_nse_market_open():
+    """True during actual NSE cash market hours: Mon-Fri, 09:15-15:30 IST."""
+    now_ist = datetime.now(pytz.utc).astimezone(IST)
+    if now_ist.weekday() > 4:  # Sat=5, Sun=6
+        return False
+    return dtime(9, 15) <= now_ist.time() <= dtime(15, 30)
+
 
 def load_data():
     
@@ -40,13 +51,13 @@ def load_data():
     return df_5m_price, df_5m_vol, df_15m_price, df_15m_vol, df_opening, last_updated
 
 
-def apply_fo_filter(df, enabled, name_col='Stock Name', sort_col='% Change'):
-    """Filter to F&O stocks only (if enabled) and sort by EMA column if present."""
+def apply_fo_filter(df, enabled, name_col='Stock Name', sort_col=None):
+    """Filter to F&O stocks only (if enabled) and sort by the given column if present."""
     if df is None or df.empty:
         return df
     if enabled and name_col in df.columns:
         df = df[df[name_col].isin(FO_LIST)]
-    if sort_col in df.columns:
+    if sort_col is not None and sort_col in df.columns:
         df = df.sort_values(by=sort_col, ascending=False)
     return df
 
@@ -218,6 +229,16 @@ st.markdown(
         box-shadow: 0 0 0 0 rgba(62,213,152,0.6);
         animation: pulse-dot 2s infinite;
         flex-shrink: 0;
+    }
+    .status-dot.closed {
+        background: #E5484D;
+        box-shadow: 0 0 0 0 rgba(229,72,77,0.6);
+        animation: pulse-dot-closed 2s infinite;
+    }
+    @keyframes pulse-dot-closed {
+        0%   { box-shadow: 0 0 0 0 rgba(229,72,77,0.55); }
+        70%  { box-shadow: 0 0 0 7px rgba(229,72,77,0); }
+        100% { box-shadow: 0 0 0 0 rgba(229,72,77,0); }
     }
     @keyframes pulse-dot {
         0%   { box-shadow: 0 0 0 0 rgba(62,213,152,0.55); }
@@ -404,10 +425,13 @@ with col1:
     fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
 
 with col2:
+    market_open = is_nse_market_open()
+    dot_class = "status-dot" if market_open else "status-dot closed"
+    status_text = "LIVE" if market_open else "CLOSED"
     st.markdown(
         f"<div class='status-pill-wrap'><span class='status-pill'>"
-        f"<span class='status-dot'></span>"
-        f"<span class='status-label'>LIVE</span> &nbsp;•&nbsp; Updated (IST): {last_updated} &nbsp;•&nbsp; Next refresh in 5mins"
+        f"<span class='{dot_class}'></span>"
+        f"<span class='status-label'>{status_text}</span> &nbsp;•&nbsp; Updated (IST): {last_updated} &nbsp;•&nbsp; Next refresh in 5mins"
         f"</span></div>",
         unsafe_allow_html=True
     )
@@ -415,11 +439,11 @@ with col2:
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------- Filter data (unchanged logic) ----------------
-df_output_5mP = apply_fo_filter(df_output_5mP, fo_checkbox)
-df_output_5mVol = apply_fo_filter(df_output_5mVol, fo_checkbox)
-df_output_15mP = apply_fo_filter(df_output_15mP, fo_checkbox)
-df_output_15mVol = apply_fo_filter(df_output_15mVol, fo_checkbox)
-df_output_open = apply_fo_filter(df_output_open, fo_checkbox)
+df_output_5mP = apply_fo_filter(df_output_5mP, fo_checkbox, sort_col='Price Change% in 5mins')
+df_output_5mVol = apply_fo_filter(df_output_5mVol, fo_checkbox, sort_col='Volume Change% in 5mins')
+df_output_15mP = apply_fo_filter(df_output_15mP, fo_checkbox, sort_col='Price Change% in 15mins')
+df_output_15mVol = apply_fo_filter(df_output_15mVol, fo_checkbox, sort_col='Volume Change% in 15mins')
+df_output_open = apply_fo_filter(df_output_open, fo_checkbox, sort_col='Opening Gap')
 
 tab_5m, tab_15m, tab_open = st.tabs(["⏱️ 5 Minutes", "⏳ 15 Minutes", "🔔 Pre-Open Market"])
 

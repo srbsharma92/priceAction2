@@ -130,8 +130,8 @@ def screener():
     response = requests.post(url, headers=headers, data=json.dumps(query), timeout=20)
     
     if response.status_code != 200:
-        st.error(f"Request failed with status: {response.status_code} {response.reason}")
-        return None
+        print(f"Request failed with status: {response.status_code} {response.reason}")
+        return None, None, None, None, None, None
     
     y = response.json()
     
@@ -209,9 +209,9 @@ def main():
             writer, sheet_name="5m_Price", index=False)
         (df_5m_vol if df_5m_vol is not None else pd.DataFrame()).to_excel(
             writer, sheet_name="5m_Vol", index=False)
-        (df_15m_price if df_5m_price is not None else pd.DataFrame()).to_excel(
+        (df_15m_price if df_15m_price is not None else pd.DataFrame()).to_excel(
             writer, sheet_name="15m_Price", index=False)
-        (df_15m_vol if df_5m_vol is not None else pd.DataFrame()).to_excel(
+        (df_15m_vol if df_15m_vol is not None else pd.DataFrame()).to_excel(
             writer, sheet_name="15m_Vol", index=False)
         (df_opening if df_opening is not None else pd.DataFrame()).to_excel(
             writer, sheet_name="Opening", index=False)

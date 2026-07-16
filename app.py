@@ -116,7 +116,15 @@ def theme_table(styler):
         ])
     )
 
-
+def format_percent_cols(styler):
+    """Auto-detect columns whose name contains '%' and format them as
+    e.g. '2.83%' (2 decimals + percent sign). Purely cosmetic — doesn't
+    touch underlying values, so sorting logic upstream is unaffected."""
+    df = styler.data
+    pct_cols = [c for c in df.columns if '%' in c]
+    fmt = {col: (lambda v: f"{v:.2f}%" if pd.notna(v) else "") for col in pct_cols}
+    return styler.format(fmt)
+    
 # ============================= Streamlit UI part =============================
 
 st.markdown(
@@ -456,6 +464,7 @@ with tab_5m:
         )
         styled_5mP = df_output_5mP.style.apply(highlight_close, axis=1)
         styled_5mP = theme_table(styled_5mP)
+        styled_5mP = format_percent_cols(styled_5mP)
         st.table(styled_5mP)
     if df_output_5mVol is not None and not df_output_5mVol.empty:
         st.markdown(
@@ -464,6 +473,7 @@ with tab_5m:
         )
         styled_5mVol = df_output_5mVol.style.apply(highlight_close, axis=1)
         styled_5mVol = theme_table(styled_5mVol)
+        styled_5mVol = format_percent_cols(styled_5mVol)
         st.table(styled_5mVol)
 
 # ===================== SECTION 2: 15 MINUTES =====================
@@ -475,6 +485,7 @@ with tab_15m:
         )
         styled_15mP = df_output_15mP.style.apply(highlight_close, axis=1)
         styled_15mP = theme_table(styled_15mP)
+        styled_15mP = format_percent_cols(styled_15mP)
         st.table(styled_15mP)
     if df_output_15mVol is not None and not df_output_15mVol.empty:
         st.markdown(
@@ -483,6 +494,7 @@ with tab_15m:
         )
         styled_15mVol = df_output_15mVol.style.apply(highlight_close, axis=1)
         styled_15mVol = theme_table(styled_15mVol)
+        styled_15mVol = format_percent_cols(styled_15mVol)
         st.table(styled_15mVol)
 
 # ===================== SECTION 3: PRE-OPEN MARKET =====================
@@ -494,6 +506,7 @@ with tab_open:
         )
         styled_open = df_output_open.style.apply(highlight_close, axis=1)
         styled_open = theme_table(styled_open)
+        styled_open = format_percent_cols(styled_open)
         st.table(styled_open)
 
 st.markdown(

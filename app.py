@@ -34,7 +34,7 @@ def is_nse_market_open():
     now_ist = datetime.now(pytz.utc).astimezone(IST)
     if now_ist.weekday() > 4:  # Sat=5, Sun=6
         return False
-    return dtime(9, 15) <= now_ist.time() <= dtime(15, 30)
+    return dtime(9, 3) <= now_ist.time() <= dtime(15, 30)
 
 
 def load_data():

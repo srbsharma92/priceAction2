@@ -28,7 +28,6 @@ st.set_page_config(
 
 # Auto-refresh the page every 5 minutes to pick up new data
 st_autorefresh(interval=5 * 60 * 1000, key="datarefresh")
-main()
 
 def is_nse_market_open():
     """True during actual NSE cash market hours: Mon-Fri, 09:15-15:30 IST."""

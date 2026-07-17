@@ -458,7 +458,7 @@ df_output_DP = apply_fo_filter(df_output_DP, fo_checkbox, sort_col='Price Change
 df_output_DVol = apply_fo_filter(df_output_DVol, fo_checkbox, sort_col='Volume Change% in Day')
 df_output_open = apply_fo_filter(df_output_open, fo_checkbox, sort_col='Opening Gap')
 
-tab_5m, tab_15m, tab_D, tab_open = st.tabs(["⏱️ 5 Minutes", "⏳ 15 Minutes", "📅 Daily", "🔔 Pre-Open Market"])
+tab_5m, tab_15m, tab_D, tab_open = st.tabs(["⏱️ 5 Minutes", "⏳ 15 Minutes", "📅 Today", "🔔 Pre-Open Market"])
 
 # ===================== SECTION 1: 5 MINUTES =====================
 with tab_5m:

@@ -215,7 +215,7 @@ def main():
         print(f"Market closed at {now_ist.strftime('%H:%M:%S %d%b%y')} IST — skipping run.")
         sys.exit(0)
 
-    df, df_5m_price, df_5m_vol, df_15m_price, df_15m_vol,df_opening = screener()
+    df, df_5m_price, df_5m_vol, df_15m_price, df_15m_vol,df_D_price, df_D_vol,df_opening = screener()
 
     timestamp = now_ist.strftime("%Y-%m-%d %H:%M:%S")
 

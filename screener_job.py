@@ -187,7 +187,7 @@ def screener():
     df_D_Price= df[ (df['change'].abs() > 0.7) & ( (df['volume']*df['close']) > 1000000)].sort_values(by='change', ascending=False)
     df_D_Price['Momentum']=  np.where(df_D_Price['change'] > 0, 'Bullish','Bearish')
     df_D_Price=df_D_Price[['name','change','Momentum']]
-    df_D_Price.columns=['Stock Name','Price Change%','Momentum']
+    df_D_Price.columns=['Stock Name','Price Change% in Day','Momentum']
      
     df_D_Vol= df[ (df['volume_change'] > 200 ) & ( (df['volume']*df['close']) > 1000000) ].sort_values(by='volume_change', ascending=False)
     df_D_Vol['Momentum']=  np.where(df_D_Vol['change'] > 0, 'Bullish','Bearish')
@@ -196,7 +196,7 @@ def screener():
      
     #Presentation
     df_D_Vol['Traded Value'] = (df_D_Vol['Traded Value'] / 10000000).round(2).astype(str) + 'Cr'
-    df_D_Vol.columns=['Stock Name','Price Change%','Volume Change%','Momentum','Days Traded Value']
+    df_D_Vol.columns=['Stock Name','Price Change% in Day','Volume Change% in Day','Momentum','Days Traded Value']
     
     #opening
     df_opening= df[df['gap'].abs() > 2 ].sort_values(by='gap', ascending=False)
@@ -205,7 +205,7 @@ def screener():
     df_opening=df_opening[['name','gap','Momentum']]
     df_opening.columns=['Stock Name','Opening Gap%','Momentum']
     
-    return df, df_5m_Price,df_5m_Vol,df_15m_Price,df_15m_Vol,df_opening
+    return df, df_5m_Price,df_5m_Vol,df_15m_Price,df_15m_Vol,df_D_Price,df_D_Vol,df_opening
 
 
 def main():
@@ -228,6 +228,10 @@ def main():
             writer, sheet_name="15m_Price", index=False)
         (df_15m_vol if df_15m_vol is not None else pd.DataFrame()).to_excel(
             writer, sheet_name="15m_Vol", index=False)
+        df_D_price if df_D_price is not None else pd.DataFrame()).to_excel(
+            writer, sheet_name="D_Price", index=False)
+        (df_D_vol if df_D_vol is not None else pd.DataFrame()).to_excel(
+            writer, sheet_name="D_Vol", index=False)
         (df_opening if df_opening is not None else pd.DataFrame()).to_excel(
             writer, sheet_name="Opening", index=False)
         pd.DataFrame({"last_updated_ist": [timestamp]}).to_excel(

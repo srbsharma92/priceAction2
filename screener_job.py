@@ -228,7 +228,7 @@ def main():
             writer, sheet_name="15m_Price", index=False)
         (df_15m_vol if df_15m_vol is not None else pd.DataFrame()).to_excel(
             writer, sheet_name="15m_Vol", index=False)
-        df_D_price if df_D_price is not None else pd.DataFrame()).to_excel(
+        (df_D_price if df_D_price is not None else pd.DataFrame()).to_excel(
             writer, sheet_name="D_Price", index=False)
         (df_D_vol if df_D_vol is not None else pd.DataFrame()).to_excel(
             writer, sheet_name="D_Vol", index=False)

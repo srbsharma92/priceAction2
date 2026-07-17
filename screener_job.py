@@ -184,7 +184,7 @@ def screener():
     df_15m_Vol.columns=['Stock Name','Price Change% in 15mins','Volume Change% in 15mins','Momentum','Days Traded Value']
 
     #Daily charting =====================================================
-    df_D_Price= df[ (df['change'].abs() > 0.7) & ( (df['volume']*df['close']) > 1000000)].sort_values(by='change', ascending=False)
+    df_D_Price= df[ (df['change'].abs() > 3.39) & ( (df['volume']*df['close']) > 1000000)].sort_values(by='change', ascending=False)
     df_D_Price['Momentum']=  np.where(df_D_Price['change'] > 0, 'Bullish','Bearish')
     df_D_Price=df_D_Price[['name','change','Momentum']]
     df_D_Price.columns=['Stock Name','Price Change% in Day','Momentum']

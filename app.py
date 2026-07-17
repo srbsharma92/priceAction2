@@ -38,17 +38,19 @@ def is_nse_market_open():
 
 
 def load_data():
-    
+
     if not os.path.exists(EXCEL_PATH):
-        return None, None, None, None, None, "No data yet"
+        return None, None, None, None, None, None, None, "No data yet"
     df_5m_price = pd.read_excel(EXCEL_PATH, sheet_name="5m_Price")
     df_5m_vol = pd.read_excel(EXCEL_PATH, sheet_name="5m_Vol")
     df_15m_price = pd.read_excel(EXCEL_PATH, sheet_name="15m_Price")
     df_15m_vol = pd.read_excel(EXCEL_PATH, sheet_name="15m_Vol")
+    df_d_price = pd.read_excel(EXCEL_PATH, sheet_name="D_Price")
+    df_d_vol = pd.read_excel(EXCEL_PATH, sheet_name="D_Vol")
     df_opening = pd.read_excel(EXCEL_PATH, sheet_name="Opening")
     meta = pd.read_excel(EXCEL_PATH, sheet_name="meta")
     last_updated = meta["last_updated_ist"].iloc[0] if not meta.empty else "Unknown"
-    return df_5m_price, df_5m_vol, df_15m_price, df_15m_vol, df_opening, last_updated
+    return df_5m_price, df_5m_vol, df_15m_price, df_15m_vol, df_d_price, df_d_vol, df_opening, last_updated
 
 
 def apply_fo_filter(df, enabled, name_col='Stock Name', sort_col=None):
@@ -124,7 +126,7 @@ def format_percent_cols(styler):
     pct_cols = [c for c in df.columns if '%' in c]
     fmt = {col: (lambda v: f"{v:.2f}%" if pd.notna(v) else "") for col in pct_cols}
     return styler.format(fmt)
-    
+
 # ============================= Streamlit UI part =============================
 
 st.markdown(
@@ -423,7 +425,8 @@ st.markdown(
 )
 
 # ---------------- Load data (unchanged logic) ----------------
-df_output_5mP, df_output_5mVol, df_output_15mP, df_output_15mVol, df_output_open, last_updated = load_data()
+(df_output_5mP, df_output_5mVol, df_output_15mP, df_output_15mVol,
+ df_output_DP, df_output_DVol, df_output_open, last_updated) = load_data()
 
 st.markdown('<div class="controls-card">', unsafe_allow_html=True)
 
@@ -451,9 +454,11 @@ df_output_5mP = apply_fo_filter(df_output_5mP, fo_checkbox, sort_col='Price Chan
 df_output_5mVol = apply_fo_filter(df_output_5mVol, fo_checkbox, sort_col='Volume Change% in 5mins')
 df_output_15mP = apply_fo_filter(df_output_15mP, fo_checkbox, sort_col='Price Change% in 15mins')
 df_output_15mVol = apply_fo_filter(df_output_15mVol, fo_checkbox, sort_col='Volume Change% in 15mins')
+df_output_DP = apply_fo_filter(df_output_DP, fo_checkbox, sort_col='Price Change% in Day')
+df_output_DVol = apply_fo_filter(df_output_DVol, fo_checkbox, sort_col='Volume Change% in Day')
 df_output_open = apply_fo_filter(df_output_open, fo_checkbox, sort_col='Opening Gap')
 
-tab_5m, tab_15m, tab_open = st.tabs(["⏱️ 5 Minutes", "⏳ 15 Minutes", "🔔 Pre-Open Market"])
+tab_5m, tab_15m, tab_D, tab_open = st.tabs(["⏱️ 5 Minutes", "⏳ 15 Minutes", "📅 Daily", "🔔 Pre-Open Market"])
 
 # ===================== SECTION 1: 5 MINUTES =====================
 with tab_5m:
@@ -497,7 +502,28 @@ with tab_15m:
         styled_15mVol = format_percent_cols(styled_15mVol)
         st.table(styled_15mVol)
 
-# ===================== SECTION 3: PRE-OPEN MARKET =====================
+# ===================== SECTION 3: DAILY =====================
+with tab_D:
+    if df_output_DP is not None and not df_output_DP.empty:
+        st.markdown(
+            "<div class='section-badge'><span class='icon'>⚡</span><span class='label'>Price Momentum for the Day</span></div>",
+            unsafe_allow_html=True
+        )
+        styled_DP = df_output_DP.style.apply(highlight_close, axis=1)
+        styled_DP = theme_table(styled_DP)
+        styled_DP = format_percent_cols(styled_DP)
+        st.table(styled_DP)
+    if df_output_DVol is not None and not df_output_DVol.empty:
+        st.markdown(
+            "<div class='section-badge'><span class='icon'>📊</span><span class='label'>Volume Momentum for the Day</span></div>",
+            unsafe_allow_html=True
+        )
+        styled_DVol = df_output_DVol.style.apply(highlight_close, axis=1)
+        styled_DVol = theme_table(styled_DVol)
+        styled_DVol = format_percent_cols(styled_DVol)
+        st.table(styled_DVol)
+
+# ===================== SECTION 4: PRE-OPEN MARKET =====================
 with tab_open:
     if df_output_open is not None and not df_output_open.empty:
         st.markdown(

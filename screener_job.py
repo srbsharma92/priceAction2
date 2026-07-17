@@ -195,7 +195,7 @@ def screener():
     df_D_Vol=df_D_Vol[['name','change','volume_change','Momentum','Traded Value']]
      
     #Presentation
-    df_D_Vol['Traded Value'] = (df_15m_Vol['Traded Value'] / 10000000).round(2).astype(str) + 'Cr'
+    df_D_Vol['Traded Value'] = (df_D_Vol['Traded Value'] / 10000000).round(2).astype(str) + 'Cr'
     df_D_Vol.columns=['Stock Name','Price Change%','Volume Change%','Momentum','Days Traded Value']
     
     #opening

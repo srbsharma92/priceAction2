@@ -77,7 +77,7 @@ def screener():
         "name", "change", "change|5", "volume_change|5", "change|15", "volume_change|15",
         "ATR|60", "low|60", "high|60", "RSI|60",
         "close|60", "EMA10|60", "EMA20|60", "EMA200|60", "EMA10", "EMA20", "EMA200",
-        "close", 'volume','gap','volume|5',
+        "close", 'volume','gap','volume|5',"volume_change",
         "exchange"
     ]
     
@@ -183,6 +183,21 @@ def screener():
     df_15m_Vol['Traded Value'] = (df_15m_Vol['Traded Value'] / 10000000).round(2).astype(str) + 'Cr'
     df_15m_Vol.columns=['Stock Name','Price Change% in 15mins','Volume Change% in 15mins','Momentum','Days Traded Value']
 
+    #Daily charting =====================================================
+    df_D_Price= df[ (df['change'].abs() > 0.7) & ( (df['volume']*df['close']) > 1000000)].sort_values(by='change', ascending=False)
+    df_D_Price['Momentum']=  np.where(df_D_Price['change'] > 0, 'Bullish','Bearish')
+    df_D_Price=df_D_Price[['name','change','Momentum']]
+    df_D_Price.columns=['Stock Name','Price Change%','Momentum']
+     
+    df_D_Vol= df[ (df['volume_change'] > 200 ) & ( (df['volume']*df['close']) > 1000000) ].sort_values(by='volume_change', ascending=False)
+    df_D_Vol['Momentum']=  np.where(df_D_Vol['change'] > 0, 'Bullish','Bearish')
+    df_D_Vol['Traded Value']=df_D_Vol['close']* df_D_Vol['volume']
+    df_D_Vol=df_D_Vol[['name','change','volume_change','Momentum','Traded Value']]
+     
+    #Presentation
+    df_D_Vol['Traded Value'] = (df_15m_Vol['Traded Value'] / 10000000).round(2).astype(str) + 'Cr'
+    df_D_Vol.columns=['Stock Name','Price Change%','Volume Change%','Momentum','Days Traded Value']
+    
     #opening
     df_opening= df[df['gap'].abs() > 2 ].sort_values(by='gap', ascending=False)
     df_opening['gap']=df_opening['gap'].round(1)
